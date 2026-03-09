@@ -1,5 +1,5 @@
 import requests
-
+# 更新一下 
 from src.core.bot import MusicPartnerBot
 from src.utils.config import Config
 from src.utils.logger import Logger
@@ -59,4 +59,5 @@ def main():
             logger.error(f"发送异常通知时出错: {str(notify_error)}")
 
 if __name__ == "__main__":
+
     main()

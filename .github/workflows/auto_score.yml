@@ -8,21 +8,28 @@ on:
 jobs:
   score:
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # 防止卡死
-    
+    timeout-minutes: 15
+    # 解决 Node.js 弃用警告，强制使用 Node 24
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4  # 升级到最新版，修复 Node 警告
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v5  # 升级到最新版，修复 Node 警告
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.11'  # 固定稳定版本，避免 3.x 自动升级出错
+        # 改用 Python 3.9，兼容性更好，避免高版本导致依赖问题
+        python-version: '3.9'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        # 先安装基础依赖，再单独安装 pyncm 的兼容版本
+        pip install requests>=2.25.0 pycryptodome>=3.9.0 PyNaCl>=1.4.0
+        # 安装 pyncm 的最新兼容版本（如果 1.7.1 不存在，改用最新版）
+        pip install pyncm
 
     - name: Run scoring script
       env:

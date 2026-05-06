@@ -9,9 +9,11 @@ jobs:
   score:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # 解决 Node.js 弃用警告，强制使用 Node 24
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      # 配置国内PyPI镜像，解决网络问题
+      PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
+      PIP_TRUSTED_HOST: pypi.tuna.tsinghua.edu.cn
 
     steps:
     - name: Checkout code
@@ -20,16 +22,15 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        # 改用 Python 3.9，兼容性更好，避免高版本导致依赖问题
         python-version: '3.9'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # 先安装基础依赖，再单独安装 pyncm 的兼容版本
+        # 安装基础依赖
         pip install requests>=2.25.0 pycryptodome>=3.9.0 PyNaCl>=1.4.0
-        # 安装 pyncm 的最新兼容版本（如果 1.7.1 不存在，改用最新版）
-        pip install pyncm
+        # 直接从GitHub源码安装pyncm（绕过PyPI问题）
+        pip install git+https://github.com/mos9527/pyncm.git
 
     - name: Run scoring script
       env:
